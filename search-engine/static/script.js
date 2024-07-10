@@ -30,15 +30,8 @@ function addSearchRow() {
         <input type="text" name="searchTerm[]" placeholder="Search Term">
         <span class="in-label">in</span>
         <select name="metadata[]">
-            <option value="all">All Metadata</option>
             <option value="title">Title</option>
-            <option value="Pages">Pages</option>
-            <option value="Cites in Papers">Cites in Papers</option>
-            <option value="Cites in Patent">Cites in Patent</option>
-            <option value="Full Text Views">Full Text Views</option>
             <option value="Publisher">Publisher</option>
-            <option value="DOI">DOI</option>
-            <option value="Date of Publication">Date of Publication</option>
             <option value="abstract">Abstract</option>
             <option value="Published in">Published in</option>
             <option value="Authors">Authors</option>

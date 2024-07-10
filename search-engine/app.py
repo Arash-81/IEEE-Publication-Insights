@@ -9,7 +9,7 @@ app = Flask(__name__)
 es = Elasticsearch(
     "https://localhost:9200",
     verify_certs=False,
-    ca_certs="./http_ca.crt",
+    ca_certs="../http_ca.crt",
     api_key="RmdtSG01QUI5YXdHS0tiQkJCcEE6UGxhZFc5aUFSNjJPUjZQZG1XcHRlZw=="
 )
 
@@ -53,7 +53,7 @@ def search():
     search_results = [hit['_source'] for hit in response['hits']['hits']]
 
     # Save results to a JSON file
-    results_file = 'search_results.json'
+    results_file = './search_results.json'
     with open(results_file, 'w') as file:
         json.dump(search_results, file, indent=4)
 

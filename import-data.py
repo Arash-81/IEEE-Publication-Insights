@@ -5,7 +5,7 @@ es = Elasticsearch(
     "https://localhost:9200", 
     verify_certs=False, 
     ca_certs="./http_ca.crt", 
-    api_key="aHFZSGlaQUJaMGxWX2tqS1lsYms6OGxaLTlYVUNSa0NDT2ZrcGZIUUdGQQ=="
+    api_key="RmdtSG01QUI5YXdHS0tiQkJCcEE6UGxhZFc5aUFSNjJPUjZQZG1XcHRlZw=="
 )
 
 def process_publications(publications, index_name):
