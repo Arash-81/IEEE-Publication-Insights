@@ -13,6 +13,7 @@ http_ca.crt
 temp
 *.pdf
 elastic/
+search_results.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
