@@ -5,12 +5,11 @@ import os
 
 app = Flask(__name__)
 
-# Initialize Elasticsearch client
 es = Elasticsearch(
     "https://localhost:9200",
     verify_certs=False,
     ca_certs="../http_ca.crt",
-    api_key="RmdtSG01QUI5YXdHS0tiQkJCcEE6UGxhZFc5aUFSNjJPUjZQZG1XcHRlZw=="
+    api_key="d2JXY29KQUJZcWFtaDJ1S2t5Y3I6S3FFdHpiS0ZTc2UzV1p4LThvakN4dw=="
 )
 
 @app.route('/')
@@ -21,7 +20,6 @@ def index():
 def search():
     form_data = request.form.to_dict(flat=False)
     
-    # Build the Elasticsearch query
     must_clauses = []
     for i in range(len(form_data['searchTerm[]'])):
         search_term = form_data['searchTerm[]'][i]
@@ -45,19 +43,12 @@ def search():
         }
     }
 
-    # Perform the search
     index_name = "relevance"
     response = es.search(index=index_name, body=query)
 
-    # Extract the search results
     search_results = [hit['_source'] for hit in response['hits']['hits']]
 
-    # Save results to a JSON file
-    results_file = './search_results.json'
-    with open(results_file, 'w') as file:
-        json.dump(search_results, file, indent=4)
-
-    return jsonify(search_results)
+    return render_template('results.html', search_results=search_results)
 
 if __name__ == '__main__':
     app.run(debug=True)
