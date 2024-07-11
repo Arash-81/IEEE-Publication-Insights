@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify, render_template
 from elasticsearch import Elasticsearch
 import json
-import os
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
 
@@ -48,7 +50,62 @@ def search():
 
     search_results = [hit['_source'] for hit in response['hits']['hits']]
 
+    with open('./search_results.json', 'w') as f:
+        json.dump(search_results, f)
+
     return render_template('results.html', search_results=search_results)
+
+with open('./search_results.json', 'r') as file:
+    data = json.load(file)
+
+df = pd.DataFrame(data)
+
+def concatenate_fields(row):
+    title = row['title'] if row['title'] else ''
+    ieee_keywords = ' '.join(row['IEEE Keywords']) if row['IEEE Keywords'] else ''
+    author_keywords = ' '.join(row['Author Keywords']) if row['Author Keywords'] else ''
+    abstract = row['abstract'] if row['abstract'] else ''
+    return ' '.join([title, ieee_keywords, author_keywords, abstract])
+
+df['text'] = df.apply(concatenate_fields, axis=1)
+df['title'] = df['title'].fillna('').str.lower().str.strip()
+df = df[['title', 'text']]
+
+vectorizer = TfidfVectorizer(stop_words='english')
+tfidf_matrix = vectorizer.fit_transform(df['text'])
+cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
+def recommend_articles(article_title, top_n=5):
+    article_title = article_title.lower().strip()
+
+    try:
+        idx = df[df['title'] == article_title].index[0]
+    except IndexError:
+        return []
+
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+
+    seen_titles = set()
+    recommendations = []
+    for i, score in sim_scores[1:]:
+        title = df.iloc[i]['title']
+        if title not in seen_titles:
+            seen_titles.add(title)
+            recommendations.append((title, score))
+        if len(recommendations) >= top_n:
+            break
+
+    return [title for title, score in recommendations]
+
+@app.route('/recommend', methods=['GET', 'POST'])
+def recommend():
+    if request.method == 'POST':
+        article_title = request.form.get('article_title')
+        top_n = int(request.form.get('top_n'))
+        recommendations = recommend_articles(article_title, top_n)
+        return render_template('recommendations.html', recommendations=recommendations)
+    return render_template('recommend.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
