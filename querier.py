@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch
 import json
-# Initialize Elasticsearch client
+
 es = Elasticsearch(
     "https://localhost:9200", 
     verify_certs=False, 
@@ -8,8 +8,6 @@ es = Elasticsearch(
     api_key="RmdtSG01QUI5YXdHS0tiQkJCcEE6UGxhZFc5aUFSNjJPUjZQZG1XcHRlZw=="
 )
 
-
-# Define the query without the date filter
 query = {
     "query": {
         "bool": {
