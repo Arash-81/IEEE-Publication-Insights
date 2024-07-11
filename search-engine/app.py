@@ -4,6 +4,7 @@ import json
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import os
 
 app = Flask(__name__)
 
@@ -55,8 +56,14 @@ def search():
 
     return render_template('results.html', search_results=search_results)
 
-with open('./search_results.json', 'r') as file:
-    data = json.load(file)
+if os.path.exists('./publications.json'): #./search_results.json
+    with open('./publications.json', 'r') as file:
+        try:
+            data = json.load(file)['Relevance']
+        except json.JSONDecodeError:
+            data = []
+else:
+    data = []
 
 df = pd.DataFrame(data)
 
@@ -67,15 +74,21 @@ def concatenate_fields(row):
     abstract = row['abstract'] if row['abstract'] else ''
     return ' '.join([title, ieee_keywords, author_keywords, abstract])
 
-df['text'] = df.apply(concatenate_fields, axis=1)
-df['title'] = df['title'].fillna('').str.lower().str.strip()
-df = df[['title', 'text']]
+if not df.empty:
+    df['text'] = df.apply(concatenate_fields, axis=1)
+    df['title'] = df['title'].fillna('').str.lower().str.strip()
+    df = df[['title', 'text']]
 
-vectorizer = TfidfVectorizer(stop_words='english')
-tfidf_matrix = vectorizer.fit_transform(df['text'])
-cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+    vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = vectorizer.fit_transform(df['text'])
+    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+else:
+    cosine_sim = None
 
 def recommend_articles(article_title, top_n=5):
+    if cosine_sim is None:
+        return []
+
     article_title = article_title.lower().strip()
 
     try:

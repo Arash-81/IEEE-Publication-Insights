@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="results-container">
+        <h2>Recommendations</h2>
+        {% if recommendations %}
+            <ul>
+                {% for recommendation in recommendations %}
+                    <li>{{ recommendation }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No recommendations found.</p>
+        {% endif %}
+        <a href="/recommend">Back to Recommender</a>
+    </div>
+</body>
+</html>

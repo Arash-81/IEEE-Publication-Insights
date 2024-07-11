@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommender System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="advanced-search-container">
+        <h2>Recommender System</h2>
+        <form method="post" action="/recommend">
+            <div class="search-row">
+                <input type="text" name="article_title" placeholder="Article Title" required>
+            </div>
+            <div class="search-row">
+                <label for="top_n">Number of Recommendations:</label>
+                <select name="top_n" id="top_n">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+            <button type="submit" id="recommendButton">Recommend</button>
+        </form>
+    </div>
+</body>
+</html>
